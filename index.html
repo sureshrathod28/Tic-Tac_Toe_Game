@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tic Tac Toe</title>
+  <style>
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      border: 1px solid #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tic Tac Toe</h1>
+  <div class="grid">
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+  </div>
+  <p id="turn"></p>
+  <p id="winner"></p>
+  <p id="draw"></p>
+  <button id="restart">Restart</button>
+
+  <script>
+    // Game state
+    let currentPlayer = 'X';
+    let cells = document.getElementsByClassName('cell');
+    let turn = document.getElementById('turn');
+    let winner = document.getElementById('winner');
+    let draw = document.getElementById('draw');
+    let restartButton = document.getElementById('restart');
+
+    // Add click event listeners to cells
+    for (let i = 0; i < cells.length; i++) {
+      cells[i].addEventListener('click', cellClicked);
+    }
+
+    // Restart the game
+    restartButton.addEventListener('click', restart);
+
+    // Handle cell click
+    function cellClicked() {
+      if (this.textContent !== '') {
+        return; // Cell already played
+      }
+
+      this.textContent = currentPlayer;
+      this.style.cursor = 'not-allowed';
+      checkGameState();
+      togglePlayer();
+    }
+
+    // Toggle current player
+    function togglePlayer() {
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      turn.textContent = "Current Player: " + currentPlayer;
+    }
+
+    // Check the game state for a win or draw
+    function checkGameState() {
+      let board = [];
+      for (let i = 0; i < cells.length; i++) {
+        board[i] = cells[i].textContent;
+      }
+
+      const winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6] // Diagonals
+      ];
+
+      for (let combo of winningCombinations) {
+        const [a, b, c] = combo;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          winner.textContent = "Winner: " + currentPlayer;
+          disableCells();
+          return;
+        }
+      }
+
+      if (board.every(cell => cell !== '')) {
+        draw.textContent = "Game ends in a draw!";
+        disableCells();
+      }
+    }
+
+    // Disable all cells
+    function disableCells() {
+      for (let i = 0; i < cells.length; i++) {
+        cells[i].style.cursor = 'not-allowed';
+      }
+    }
+
+    // Restart the game
+    function restart() {
+      currentPlayer = 'X';
+      for (let i = 0; i < cells.length; i++) {
+        cells[i].textContent = '';
+        cells[i].style.cursor = 'pointer';
+      }
+      turn.textContent = "Current Player: " + currentPlayer;
+      winner.textContent = '';
+      draw.textContent = '';
+    }
+  </script>
+</body>
+</html>
